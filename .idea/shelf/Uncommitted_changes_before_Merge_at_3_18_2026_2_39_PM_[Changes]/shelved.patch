@@ -1,0 +1,1061 @@
+Index: README.md
+===================================================================
+diff --git a/README.md b/README.md
+deleted file mode 100644
+--- a/README.md	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,10 +0,0 @@
+-# CSC-325-Module-5-Lab
+-Your job is to make the following two of JavaFX/FXML programs run in your IDE while utilizing Scene Builder.
+-
+-Part 1) TipCalculator App in in chapter 12 of the Deitel and Deitel
+-
+-Part 2) ColorChooser App in chapter 13 of the Deitel and Deitel
+-
+-Part 1-Challenge) Note that the given TipCalculator App in Chapter 12, Section 12.5 of the Deitel and Deitel book does not need a calculate Button to perform its  calculations. Reimplement this app to use property listeners to perform the calculations whenever the user modifies the bill amount or changes the custom tip percentage. Also use a property binding to update Label that displays the tip percentage.
+-
+-Part 2-Challenge) The given ColorChooser App in Chapter 13, Section 13.4 of the Deitel and Deitel book, uses a (unidirectional) property binding to update a TextField's text when the Slider value changes, but not vice versa. JavaFX also supports bi-directional property bindings. Research about bi-directional property bindings online, then reimplement this app to create bidirectional bindings between the Sliders and the TextFields such that modifying a TextField's value updates the corresponding slider.
+Index: src/main/java/com/hershey/tipcalculator/TipCalculator.java
+===================================================================
+diff --git a/src/main/java/com/hershey/tipcalculator/TipCalculator.java b/src/main/java/com/hershey/tipcalculator/TipCalculator.java
+deleted file mode 100644
+--- a/src/main/java/com/hershey/tipcalculator/TipCalculator.java	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,27 +0,0 @@
+-package com.hershey.tipcalculator;
+-
+-// Fig. 12.19: TipCalculator.java
+-// Main application class that loads and displays the Tip Calculator's GUI.
+-import javafx.application.Application;
+-import javafx.fxml.FXMLLoader;
+-import javafx.scene.Parent;
+-import javafx.scene.Scene;
+-import javafx.stage.Stage;
+-
+-public class TipCalculator extends Application {
+-    @Override
+-    public void start(Stage stage) throws Exception {
+-        Parent root =
+-                FXMLLoader.load(getClass().getResource("TipCalculator.fxml"));
+-
+-        Scene scene = new Scene(root); // attach scene graph to scene
+-        stage.setTitle("Tip Calculator"); // displayed in window's title bar
+-        stage.setScene(scene); // attach scene to stage
+-        stage.show(); // display the stage
+-    }
+-
+-    public static void main(String[] args) {
+-        // create a TipCalculator object and call its start method
+-        launch(args);
+-    }
+-}
+Index: .gitignore
+===================================================================
+diff --git a/.gitignore b/.gitignore
+deleted file mode 100644
+--- a/.gitignore	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,39 +0,0 @@
+-target/
+-!.mvn/wrapper/maven-wrapper.jar
+-!**/src/main/**/target/
+-!**/src/test/**/target/
+-.kotlin
+-
+-### IntelliJ IDEA ###
+-.idea/modules.xml
+-.idea/jarRepositories.xml
+-.idea/compiler.xml
+-.idea/libraries/
+-*.iws
+-*.iml
+-*.ipr
+-
+-### Eclipse ###
+-.apt_generated
+-.classpath
+-.factorypath
+-.project
+-.settings
+-.springBeans
+-.sts4-cache
+-
+-### NetBeans ###
+-/nbproject/private/
+-/nbbuild/
+-/dist/
+-/nbdist/
+-/.nb-gradle/
+-build/
+-!**/src/main/**/build/
+-!**/src/test/**/build/
+-
+-### VS Code ###
+-.vscode/
+-
+-### Mac OS ###
+-.DS_Store
+\ No newline at end of file
+Index: src/main/java/module-info.java
+===================================================================
+diff --git a/src/main/java/module-info.java b/src/main/java/module-info.java
+deleted file mode 100644
+--- a/src/main/java/module-info.java	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,11 +0,0 @@
+-module com.hershey.tipcalculator {
+-    requires javafx.controls;
+-    requires javafx.fxml;
+-
+-    requires org.controlsfx.controls;
+-    requires com.dlsc.formsfx;
+-    requires org.kordamp.bootstrapfx.core;
+-
+-    opens com.hershey.tipcalculator to javafx.fxml;
+-    exports com.hershey.tipcalculator;
+-}
+\ No newline at end of file
+Index: src/main/java/com/hershey/tipcalculator/TipCalculatorController.java
+===================================================================
+diff --git a/src/main/java/com/hershey/tipcalculator/TipCalculatorController.java b/src/main/java/com/hershey/tipcalculator/TipCalculatorController.java
+deleted file mode 100644
+--- a/src/main/java/com/hershey/tipcalculator/TipCalculatorController.java	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,77 +0,0 @@
+-package com.hershey.tipcalculator;
+-
+-// TipCalculatorController.java
+-// Controller that handles calculateButton and tipPercentageSlider events
+-import java.math.BigDecimal;
+-import java.math.RoundingMode;
+-import java.text.NumberFormat;
+-import javafx.beans.value.ChangeListener;
+-import javafx.beans.value.ObservableValue;
+-import javafx.event.ActionEvent;
+-import javafx.fxml.FXML;
+-import javafx.scene.control.Label;
+-import javafx.scene.control.Slider;
+-import javafx.scene.control.TextField;
+-
+-public class TipCalculatorController {
+-    // formatters for currency and percentages
+-    private static final NumberFormat currency =
+-            NumberFormat.getCurrencyInstance();
+-    private static final NumberFormat percent =
+-            NumberFormat.getPercentInstance();
+-
+-    private BigDecimal tipPercentage = new BigDecimal(0.15); // 15% default
+-
+-    // GUI controls defined in FXML and used by the controller's code
+-    @FXML
+-    private TextField amountTextField;
+-
+-    @FXML
+-    private Label tipPercentageLabel;
+-
+-    @FXML
+-    private Slider tipPercentageSlider;
+-
+-    @FXML
+-    private TextField tipTextField;
+-
+-    @FXML
+-    private TextField totalTextField;
+-
+-    // calculates and displays the tip and total amounts
+-    @FXML
+-    private void calculateButtonPressed(ActionEvent event) {
+-        try {
+-            BigDecimal amount = new BigDecimal(amountTextField.getText());
+-            BigDecimal tip = amount.multiply(tipPercentage);
+-            BigDecimal total = amount.add(tip);
+-
+-            tipTextField.setText(currency.format(tip));
+-            totalTextField.setText(currency.format(total));
+-        }
+-        catch (NumberFormatException ex) {
+-            amountTextField.setText("Enter amount");
+-            amountTextField.selectAll();
+-            amountTextField.requestFocus();
+-        }
+-    }
+-
+-    // called by FXMLLoader to initialize the controller
+-    public void initialize() {
+-        // 0-4 rounds down, 5-9 rounds up
+-        currency.setRoundingMode(RoundingMode.HALF_UP);
+-
+-        // listener for changes to tipPercentageSlider's value
+-        tipPercentageSlider.valueProperty().addListener(
+-                new ChangeListener<Number>() {
+-                    @Override
+-                    public void changed(ObservableValue<? extends Number> ov,
+-                                        Number oldValue, Number newValue) {
+-                        tipPercentage =
+-                                BigDecimal.valueOf(newValue.intValue() / 100.0);
+-                        tipPercentageLabel.setText(percent.format(tipPercentage));
+-                    }
+-                }
+-        );
+-    }
+-}
+Index: mvnw
+===================================================================
+diff --git a/mvnw b/mvnw
+deleted file mode 100644
+--- a/mvnw	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,316 +0,0 @@
+-#!/bin/sh
+-# ----------------------------------------------------------------------------
+-# Licensed to the Apache Software Foundation (ASF) under one
+-# or more contributor license agreements.  See the NOTICE file
+-# distributed with this work for additional information
+-# regarding copyright ownership.  The ASF licenses this file
+-# to you under the Apache License, Version 2.0 (the
+-# "License"); you may not use this file except in compliance
+-# with the License.  You may obtain a copy of the License at
+-#
+-#    https://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing,
+-# software distributed under the License is distributed on an
+-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+-# KIND, either express or implied.  See the License for the
+-# specific language governing permissions and limitations
+-# under the License.
+-# ----------------------------------------------------------------------------
+-
+-# ----------------------------------------------------------------------------
+-# Maven Start Up Batch script
+-#
+-# Required ENV vars:
+-# ------------------
+-#   JAVA_HOME - location of a JDK home dir
+-#
+-# Optional ENV vars
+-# -----------------
+-#   M2_HOME - location of maven2's installed home dir
+-#   MAVEN_OPTS - parameters passed to the Java VM when running Maven
+-#     e.g. to debug Maven itself, use
+-#       set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+-#   MAVEN_SKIP_RC - flag to disable loading of mavenrc files
+-# ----------------------------------------------------------------------------
+-
+-if [ -z "$MAVEN_SKIP_RC" ] ; then
+-
+-  if [ -f /usr/local/etc/mavenrc ] ; then
+-    . /usr/local/etc/mavenrc
+-  fi
+-
+-  if [ -f /etc/mavenrc ] ; then
+-    . /etc/mavenrc
+-  fi
+-
+-  if [ -f "$HOME/.mavenrc" ] ; then
+-    . "$HOME/.mavenrc"
+-  fi
+-
+-fi
+-
+-# OS specific support.  $var _must_ be set to either true or false.
+-cygwin=false;
+-darwin=false;
+-mingw=false
+-case "`uname`" in
+-  CYGWIN*) cygwin=true ;;
+-  MINGW*) mingw=true;;
+-  Darwin*) darwin=true
+-    # Use /usr/libexec/java_home if available, otherwise fall back to /Library/Java/Home
+-    # See https://developer.apple.com/library/mac/qa/qa1170/_index.html
+-    if [ -z "$JAVA_HOME" ]; then
+-      if [ -x "/usr/libexec/java_home" ]; then
+-        export JAVA_HOME="`/usr/libexec/java_home`"
+-      else
+-        export JAVA_HOME="/Library/Java/Home"
+-      fi
+-    fi
+-    ;;
+-esac
+-
+-if [ -z "$JAVA_HOME" ] ; then
+-  if [ -r /etc/gentoo-release ] ; then
+-    JAVA_HOME=`java-config --jre-home`
+-  fi
+-fi
+-
+-if [ -z "$M2_HOME" ] ; then
+-  ## resolve links - $0 may be a link to maven's home
+-  PRG="$0"
+-
+-  # need this for relative symlinks
+-  while [ -h "$PRG" ] ; do
+-    ls=`ls -ld "$PRG"`
+-    link=`expr "$ls" : '.*-> \(.*\)$'`
+-    if expr "$link" : '/.*' > /dev/null; then
+-      PRG="$link"
+-    else
+-      PRG="`dirname "$PRG"`/$link"
+-    fi
+-  done
+-
+-  saveddir=`pwd`
+-
+-  M2_HOME=`dirname "$PRG"`/..
+-
+-  # make it fully qualified
+-  M2_HOME=`cd "$M2_HOME" && pwd`
+-
+-  cd "$saveddir"
+-  # echo Using m2 at $M2_HOME
+-fi
+-
+-# For Cygwin, ensure paths are in UNIX format before anything is touched
+-if $cygwin ; then
+-  [ -n "$M2_HOME" ] &&
+-    M2_HOME=`cygpath --unix "$M2_HOME"`
+-  [ -n "$JAVA_HOME" ] &&
+-    JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+-  [ -n "$CLASSPATH" ] &&
+-    CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+-fi
+-
+-# For Mingw, ensure paths are in UNIX format before anything is touched
+-if $mingw ; then
+-  [ -n "$M2_HOME" ] &&
+-    M2_HOME="`(cd "$M2_HOME"; pwd)`"
+-  [ -n "$JAVA_HOME" ] &&
+-    JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
+-fi
+-
+-if [ -z "$JAVA_HOME" ]; then
+-  javaExecutable="`which javac`"
+-  if [ -n "$javaExecutable" ] && ! [ "`expr \"$javaExecutable\" : '\([^ ]*\)'`" = "no" ]; then
+-    # readlink(1) is not available as standard on Solaris 10.
+-    readLink=`which readlink`
+-    if [ ! `expr "$readLink" : '\([^ ]*\)'` = "no" ]; then
+-      if $darwin ; then
+-        javaHome="`dirname \"$javaExecutable\"`"
+-        javaExecutable="`cd \"$javaHome\" && pwd -P`/javac"
+-      else
+-        javaExecutable="`readlink -f \"$javaExecutable\"`"
+-      fi
+-      javaHome="`dirname \"$javaExecutable\"`"
+-      javaHome=`expr "$javaHome" : '\(.*\)/bin'`
+-      JAVA_HOME="$javaHome"
+-      export JAVA_HOME
+-    fi
+-  fi
+-fi
+-
+-if [ -z "$JAVACMD" ] ; then
+-  if [ -n "$JAVA_HOME"  ] ; then
+-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+-      # IBM's JDK on AIX uses strange locations for the executables
+-      JAVACMD="$JAVA_HOME/jre/sh/java"
+-    else
+-      JAVACMD="$JAVA_HOME/bin/java"
+-    fi
+-  else
+-    JAVACMD="`\\unset -f command; \\command -v java`"
+-  fi
+-fi
+-
+-if [ ! -x "$JAVACMD" ] ; then
+-  echo "Error: JAVA_HOME is not defined correctly." >&2
+-  echo "  We cannot execute $JAVACMD" >&2
+-  exit 1
+-fi
+-
+-if [ -z "$JAVA_HOME" ] ; then
+-  echo "Warning: JAVA_HOME environment variable is not set."
+-fi
+-
+-CLASSWORLDS_LAUNCHER=org.codehaus.plexus.classworlds.launcher.Launcher
+-
+-# traverses directory structure from process work directory to filesystem root
+-# first directory with .mvn subdirectory is considered project base directory
+-find_maven_basedir() {
+-
+-  if [ -z "$1" ]
+-  then
+-    echo "Path not specified to find_maven_basedir"
+-    return 1
+-  fi
+-
+-  basedir="$1"
+-  wdir="$1"
+-  while [ "$wdir" != '/' ] ; do
+-    if [ -d "$wdir"/.mvn ] ; then
+-      basedir=$wdir
+-      break
+-    fi
+-    # workaround for JBEAP-8937 (on Solaris 10/Sparc)
+-    if [ -d "${wdir}" ]; then
+-      wdir=`cd "$wdir/.."; pwd`
+-    fi
+-    # end of workaround
+-  done
+-  echo "${basedir}"
+-}
+-
+-# concatenates all lines of a file
+-concat_lines() {
+-  if [ -f "$1" ]; then
+-    echo "$(tr -s '\n' ' ' < "$1")"
+-  fi
+-}
+-
+-BASE_DIR=`find_maven_basedir "$(pwd)"`
+-if [ -z "$BASE_DIR" ]; then
+-  exit 1;
+-fi
+-
+-##########################################################################################
+-# Extension to allow automatically downloading the maven-wrapper.jar from Maven-central
+-# This allows using the maven wrapper in projects that prohibit checking in binary data.
+-##########################################################################################
+-if [ -r "$BASE_DIR/.mvn/wrapper/maven-wrapper.jar" ]; then
+-    if [ "$MVNW_VERBOSE" = true ]; then
+-      echo "Found .mvn/wrapper/maven-wrapper.jar"
+-    fi
+-else
+-    if [ "$MVNW_VERBOSE" = true ]; then
+-      echo "Couldn't find .mvn/wrapper/maven-wrapper.jar, downloading it ..."
+-    fi
+-    if [ -n "$MVNW_REPOURL" ]; then
+-      jarUrl="$MVNW_REPOURL/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+-    else
+-      jarUrl="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+-    fi
+-    while IFS="=" read key value; do
+-      case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
+-      esac
+-    done < "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
+-    if [ "$MVNW_VERBOSE" = true ]; then
+-      echo "Downloading from: $jarUrl"
+-    fi
+-    wrapperJarPath="$BASE_DIR/.mvn/wrapper/maven-wrapper.jar"
+-    if $cygwin; then
+-      wrapperJarPath=`cygpath --path --windows "$wrapperJarPath"`
+-    fi
+-
+-    if command -v wget > /dev/null; then
+-        if [ "$MVNW_VERBOSE" = true ]; then
+-          echo "Found wget ... using wget"
+-        fi
+-        if [ -z "$MVNW_USERNAME" ] || [ -z "$MVNW_PASSWORD" ]; then
+-            wget "$jarUrl" -O "$wrapperJarPath" || rm -f "$wrapperJarPath"
+-        else
+-            wget --http-user=$MVNW_USERNAME --http-password=$MVNW_PASSWORD "$jarUrl" -O "$wrapperJarPath" || rm -f "$wrapperJarPath"
+-        fi
+-    elif command -v curl > /dev/null; then
+-        if [ "$MVNW_VERBOSE" = true ]; then
+-          echo "Found curl ... using curl"
+-        fi
+-        if [ -z "$MVNW_USERNAME" ] || [ -z "$MVNW_PASSWORD" ]; then
+-            curl -o "$wrapperJarPath" "$jarUrl" -f
+-        else
+-            curl --user $MVNW_USERNAME:$MVNW_PASSWORD -o "$wrapperJarPath" "$jarUrl" -f
+-        fi
+-
+-    else
+-        if [ "$MVNW_VERBOSE" = true ]; then
+-          echo "Falling back to using Java to download"
+-        fi
+-        javaClass="$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.java"
+-        # For Cygwin, switch paths to Windows format before running javac
+-        if $cygwin; then
+-          javaClass=`cygpath --path --windows "$javaClass"`
+-        fi
+-        if [ -e "$javaClass" ]; then
+-            if [ ! -e "$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.class" ]; then
+-                if [ "$MVNW_VERBOSE" = true ]; then
+-                  echo " - Compiling MavenWrapperDownloader.java ..."
+-                fi
+-                # Compiling the Java class
+-                ("$JAVA_HOME/bin/javac" "$javaClass")
+-            fi
+-            if [ -e "$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.class" ]; then
+-                # Running the downloader
+-                if [ "$MVNW_VERBOSE" = true ]; then
+-                  echo " - Running MavenWrapperDownloader.java ..."
+-                fi
+-                ("$JAVA_HOME/bin/java" -cp .mvn/wrapper MavenWrapperDownloader "$MAVEN_PROJECTBASEDIR")
+-            fi
+-        fi
+-    fi
+-fi
+-##########################################################################################
+-# End of extension
+-##########################################################################################
+-
+-export MAVEN_PROJECTBASEDIR=${MAVEN_BASEDIR:-"$BASE_DIR"}
+-if [ "$MVNW_VERBOSE" = true ]; then
+-  echo $MAVEN_PROJECTBASEDIR
+-fi
+-MAVEN_OPTS="$(concat_lines "$MAVEN_PROJECTBASEDIR/.mvn/jvm.config") $MAVEN_OPTS"
+-
+-# For Cygwin, switch paths to Windows format before running java
+-if $cygwin; then
+-  [ -n "$M2_HOME" ] &&
+-    M2_HOME=`cygpath --path --windows "$M2_HOME"`
+-  [ -n "$JAVA_HOME" ] &&
+-    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
+-  [ -n "$CLASSPATH" ] &&
+-    CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
+-  [ -n "$MAVEN_PROJECTBASEDIR" ] &&
+-    MAVEN_PROJECTBASEDIR=`cygpath --path --windows "$MAVEN_PROJECTBASEDIR"`
+-fi
+-
+-# Provide a "standardized" way to retrieve the CLI args that will
+-# work with both Windows and non-Windows executions.
+-MAVEN_CMD_LINE_ARGS="$MAVEN_CONFIG $@"
+-export MAVEN_CMD_LINE_ARGS
+-
+-WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
+-
+-exec "$JAVACMD" \
+-  $MAVEN_OPTS \
+-  $MAVEN_DEBUG_OPTS \
+-  -classpath "$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar" \
+-  "-Dmaven.home=${M2_HOME}" \
+-  "-Dmaven.multiModuleProjectDirectory=${MAVEN_PROJECTBASEDIR}" \
+-  ${WRAPPER_LAUNCHER} $MAVEN_CONFIG "$@"
+Index: mvnw.cmd
+===================================================================
+diff --git a/mvnw.cmd b/mvnw.cmd
+deleted file mode 100644
+--- a/mvnw.cmd	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,188 +0,0 @@
+-@REM ----------------------------------------------------------------------------
+-@REM Licensed to the Apache Software Foundation (ASF) under one
+-@REM or more contributor license agreements.  See the NOTICE file
+-@REM distributed with this work for additional information
+-@REM regarding copyright ownership.  The ASF licenses this file
+-@REM to you under the Apache License, Version 2.0 (the
+-@REM "License"); you may not use this file except in compliance
+-@REM with the License.  You may obtain a copy of the License at
+-@REM
+-@REM    https://www.apache.org/licenses/LICENSE-2.0
+-@REM
+-@REM Unless required by applicable law or agreed to in writing,
+-@REM software distributed under the License is distributed on an
+-@REM "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+-@REM KIND, either express or implied.  See the License for the
+-@REM specific language governing permissions and limitations
+-@REM under the License.
+-@REM ----------------------------------------------------------------------------
+-
+-@REM ----------------------------------------------------------------------------
+-@REM Maven Start Up Batch script
+-@REM
+-@REM Required ENV vars:
+-@REM JAVA_HOME - location of a JDK home dir
+-@REM
+-@REM Optional ENV vars
+-@REM M2_HOME - location of maven2's installed home dir
+-@REM MAVEN_BATCH_ECHO - set to 'on' to enable the echoing of the batch commands
+-@REM MAVEN_BATCH_PAUSE - set to 'on' to wait for a keystroke before ending
+-@REM MAVEN_OPTS - parameters passed to the Java VM when running Maven
+-@REM     e.g. to debug Maven itself, use
+-@REM set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+-@REM MAVEN_SKIP_RC - flag to disable loading of mavenrc files
+-@REM ----------------------------------------------------------------------------
+-
+-@REM Begin all REM lines with '@' in case MAVEN_BATCH_ECHO is 'on'
+-@echo off
+-@REM set title of command window
+-title %0
+-@REM enable echoing by setting MAVEN_BATCH_ECHO to 'on'
+-@if "%MAVEN_BATCH_ECHO%" == "on"  echo %MAVEN_BATCH_ECHO%
+-
+-@REM set %HOME% to equivalent of $HOME
+-if "%HOME%" == "" (set "HOME=%HOMEDRIVE%%HOMEPATH%")
+-
+-@REM Execute a user defined script before this one
+-if not "%MAVEN_SKIP_RC%" == "" goto skipRcPre
+-@REM check for pre script, once with legacy .bat ending and once with .cmd ending
+-if exist "%USERPROFILE%\mavenrc_pre.bat" call "%USERPROFILE%\mavenrc_pre.bat" %*
+-if exist "%USERPROFILE%\mavenrc_pre.cmd" call "%USERPROFILE%\mavenrc_pre.cmd" %*
+-:skipRcPre
+-
+-@setlocal
+-
+-set ERROR_CODE=0
+-
+-@REM To isolate internal variables from possible post scripts, we use another setlocal
+-@setlocal
+-
+-@REM ==== START VALIDATION ====
+-if not "%JAVA_HOME%" == "" goto OkJHome
+-
+-echo.
+-echo Error: JAVA_HOME not found in your environment. >&2
+-echo Please set the JAVA_HOME variable in your environment to match the >&2
+-echo location of your Java installation. >&2
+-echo.
+-goto error
+-
+-:OkJHome
+-if exist "%JAVA_HOME%\bin\java.exe" goto init
+-
+-echo.
+-echo Error: JAVA_HOME is set to an invalid directory. >&2
+-echo JAVA_HOME = "%JAVA_HOME%" >&2
+-echo Please set the JAVA_HOME variable in your environment to match the >&2
+-echo location of your Java installation. >&2
+-echo.
+-goto error
+-
+-@REM ==== END VALIDATION ====
+-
+-:init
+-
+-@REM Find the project base dir, i.e. the directory that contains the folder ".mvn".
+-@REM Fallback to current working directory if not found.
+-
+-set MAVEN_PROJECTBASEDIR=%MAVEN_BASEDIR%
+-IF NOT "%MAVEN_PROJECTBASEDIR%"=="" goto endDetectBaseDir
+-
+-set EXEC_DIR=%CD%
+-set WDIR=%EXEC_DIR%
+-:findBaseDir
+-IF EXIST "%WDIR%"\.mvn goto baseDirFound
+-cd ..
+-IF "%WDIR%"=="%CD%" goto baseDirNotFound
+-set WDIR=%CD%
+-goto findBaseDir
+-
+-:baseDirFound
+-set MAVEN_PROJECTBASEDIR=%WDIR%
+-cd "%EXEC_DIR%"
+-goto endDetectBaseDir
+-
+-:baseDirNotFound
+-set MAVEN_PROJECTBASEDIR=%EXEC_DIR%
+-cd "%EXEC_DIR%"
+-
+-:endDetectBaseDir
+-
+-IF NOT EXIST "%MAVEN_PROJECTBASEDIR%\.mvn\jvm.config" goto endReadAdditionalConfig
+-
+-@setlocal EnableExtensions EnableDelayedExpansion
+-for /F "usebackq delims=" %%a in ("%MAVEN_PROJECTBASEDIR%\.mvn\jvm.config") do set JVM_CONFIG_MAVEN_PROPS=!JVM_CONFIG_MAVEN_PROPS! %%a
+-@endlocal & set JVM_CONFIG_MAVEN_PROPS=%JVM_CONFIG_MAVEN_PROPS%
+-
+-:endReadAdditionalConfig
+-
+-SET MAVEN_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
+-set WRAPPER_JAR="%MAVEN_PROJECTBASEDIR%\.mvn\wrapper\maven-wrapper.jar"
+-set WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
+-
+-set DOWNLOAD_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+-
+-FOR /F "usebackq tokens=1,2 delims==" %%A IN ("%MAVEN_PROJECTBASEDIR%\.mvn\wrapper\maven-wrapper.properties") DO (
+-    IF "%%A"=="wrapperUrl" SET DOWNLOAD_URL=%%B
+-)
+-
+-@REM Extension to allow automatically downloading the maven-wrapper.jar from Maven-central
+-@REM This allows using the maven wrapper in projects that prohibit checking in binary data.
+-if exist %WRAPPER_JAR% (
+-    if "%MVNW_VERBOSE%" == "true" (
+-        echo Found %WRAPPER_JAR%
+-    )
+-) else (
+-    if not "%MVNW_REPOURL%" == "" (
+-        SET DOWNLOAD_URL="%MVNW_REPOURL%/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+-    )
+-    if "%MVNW_VERBOSE%" == "true" (
+-        echo Couldn't find %WRAPPER_JAR%, downloading it ...
+-        echo Downloading from: %DOWNLOAD_URL%
+-    )
+-
+-    powershell -Command "&{"^
+-		"$webclient = new-object System.Net.WebClient;"^
+-		"if (-not ([string]::IsNullOrEmpty('%MVNW_USERNAME%') -and [string]::IsNullOrEmpty('%MVNW_PASSWORD%'))) {"^
+-		"$webclient.Credentials = new-object System.Net.NetworkCredential('%MVNW_USERNAME%', '%MVNW_PASSWORD%');"^
+-		"}"^
+-		"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $webclient.DownloadFile('%DOWNLOAD_URL%', '%WRAPPER_JAR%')"^
+-		"}"
+-    if "%MVNW_VERBOSE%" == "true" (
+-        echo Finished downloading %WRAPPER_JAR%
+-    )
+-)
+-@REM End of extension
+-
+-@REM Provide a "standardized" way to retrieve the CLI args that will
+-@REM work with both Windows and non-Windows executions.
+-set MAVEN_CMD_LINE_ARGS=%*
+-
+-%MAVEN_JAVA_EXE% ^
+-  %JVM_CONFIG_MAVEN_PROPS% ^
+-  %MAVEN_OPTS% ^
+-  %MAVEN_DEBUG_OPTS% ^
+-  -classpath %WRAPPER_JAR% ^
+-  "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" ^
+-  %WRAPPER_LAUNCHER% %MAVEN_CONFIG% %*
+-if ERRORLEVEL 1 goto error
+-goto end
+-
+-:error
+-set ERROR_CODE=1
+-
+-:end
+-@endlocal & set ERROR_CODE=%ERROR_CODE%
+-
+-if not "%MAVEN_SKIP_RC%"=="" goto skipRcPost
+-@REM check for post script, once with legacy .bat ending and once with .cmd ending
+-if exist "%USERPROFILE%\mavenrc_post.bat" call "%USERPROFILE%\mavenrc_post.bat"
+-if exist "%USERPROFILE%\mavenrc_post.cmd" call "%USERPROFILE%\mavenrc_post.cmd"
+-:skipRcPost
+-
+-@REM pause the script if MAVEN_BATCH_PAUSE is set to 'on'
+-if "%MAVEN_BATCH_PAUSE%"=="on" pause
+-
+-if "%MAVEN_TERMINATE_CMD%"=="on" exit %ERROR_CODE%
+-
+-cmd /C exit /B %ERROR_CODE%
+Index: pom.xml
+===================================================================
+diff --git a/pom.xml b/pom.xml
+deleted file mode 100644
+--- a/pom.xml	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,96 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project xmlns="http://maven.apache.org/POM/4.0.0"
+-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+-    <modelVersion>4.0.0</modelVersion>
+-
+-    <groupId>com.hershey</groupId>
+-    <artifactId>TipCalculator</artifactId>
+-    <version>1.0-SNAPSHOT</version>
+-    <name>TipCalculator</name>
+-
+-    <properties>
+-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+-        <junit.version>5.12.1</junit.version>
+-    </properties>
+-
+-    <dependencies>
+-        <dependency>
+-            <groupId>org.openjfx</groupId>
+-            <artifactId>javafx-controls</artifactId>
+-            <version>21.0.6</version>
+-        </dependency>
+-        <dependency>
+-            <groupId>org.openjfx</groupId>
+-            <artifactId>javafx-fxml</artifactId>
+-            <version>21.0.6</version>
+-        </dependency>
+-        <dependency>
+-            <groupId>org.controlsfx</groupId>
+-            <artifactId>controlsfx</artifactId>
+-            <version>11.2.1</version>
+-        </dependency>
+-        <dependency>
+-            <groupId>com.dlsc.formsfx</groupId>
+-            <artifactId>formsfx-core</artifactId>
+-            <version>11.6.0</version>
+-            <exclusions>
+-                <exclusion>
+-                    <groupId>org.openjfx</groupId>
+-                    <artifactId>*</artifactId>
+-                </exclusion>
+-            </exclusions>
+-        </dependency>
+-        <dependency>
+-            <groupId>org.kordamp.bootstrapfx</groupId>
+-            <artifactId>bootstrapfx-core</artifactId>
+-            <version>0.4.0</version>
+-        </dependency>
+-        <dependency>
+-            <groupId>org.junit.jupiter</groupId>
+-            <artifactId>junit-jupiter-api</artifactId>
+-            <version>${junit.version}</version>
+-            <scope>test</scope>
+-        </dependency>
+-        <dependency>
+-            <groupId>org.junit.jupiter</groupId>
+-            <artifactId>junit-jupiter-engine</artifactId>
+-            <version>${junit.version}</version>
+-            <scope>test</scope>
+-        </dependency>
+-    </dependencies>
+-
+-    <build>
+-        <plugins>
+-            <plugin>
+-                <groupId>org.apache.maven.plugins</groupId>
+-                <artifactId>maven-compiler-plugin</artifactId>
+-                <version>3.13.0</version>
+-                <configuration>
+-                    <source>25</source>
+-                    <target>25</target>
+-                </configuration>
+-            </plugin>
+-            <plugin>
+-                <groupId>org.openjfx</groupId>
+-                <artifactId>javafx-maven-plugin</artifactId>
+-                <version>0.0.8</version>
+-                <executions>
+-                    <execution>
+-                        <!-- Default configuration for running with: mvn clean javafx:run -->
+-                        <id>default-cli</id>
+-                        <configuration>
+-                            <mainClass>com.hershey.tipcalculator/com.hershey.tipcalculator.TipCalculator</mainClass>
+-                            <launcher>app</launcher>
+-                            <jlinkZipName>app</jlinkZipName>
+-                            <jlinkImageName>app</jlinkImageName>
+-                            <noManPages>true</noManPages>
+-                            <stripDebug>true</stripDebug>
+-                            <noHeaderFiles>true</noHeaderFiles>
+-                        </configuration>
+-                    </execution>
+-                </executions>
+-            </plugin>
+-        </plugins>
+-    </build>
+-</project>
+\ No newline at end of file
+Index: src/main/java/com/hershey/tipcalculator/Launcher.java
+===================================================================
+diff --git a/src/main/java/com/hershey/tipcalculator/Launcher.java b/src/main/java/com/hershey/tipcalculator/Launcher.java
+deleted file mode 100644
+--- a/src/main/java/com/hershey/tipcalculator/Launcher.java	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,9 +0,0 @@
+-package com.hershey.tipcalculator;
+-
+-import javafx.application.Application;
+-
+-public class Launcher {
+-    public static void main(String[] args) {
+-        Application.launch(TipCalculator.class, args);
+-    }
+-}
+Index: src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml
+===================================================================
+diff --git a/src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml b/src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml
+deleted file mode 100644
+--- a/src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,38 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-
+-<?import javafx.geometry.Insets?>
+-<?import javafx.scene.control.Button?>
+-<?import javafx.scene.control.Label?>
+-<?import javafx.scene.control.Slider?>
+-<?import javafx.scene.control.TextField?>
+-<?import javafx.scene.layout.ColumnConstraints?>
+-<?import javafx.scene.layout.GridPane?>
+-<?import javafx.scene.layout.RowConstraints?>
+-
+-<GridPane hgap="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hershey.tipcalculator.TipCalculatorController">
+-    <columnConstraints>
+-        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
+-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+-    </columnConstraints>
+-    <rowConstraints>
+-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+-    </rowConstraints>
+-    <children>
+-        <Label text="Amount" />
+-        <Label fx:id="tipPercentageLabel" text="15%" GridPane.rowIndex="1" />
+-        <Label text="Tip" GridPane.rowIndex="2" />
+-        <Label text="Total" GridPane.rowIndex="3" />
+-        <TextField fx:id="amountTextField" GridPane.columnIndex="1" />
+-        <TextField fx:id="tipTextField" editable="false" focusTraversable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+-        <TextField fx:id="totalTextField" editable="false" focusTraversable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+-        <Slider fx:id="tipPercentageSlider" blockIncrement="5.0" max="30.0" value="15.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+-        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#calculateButtonPressed" text="Calculate" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+-    </children>
+-    <padding>
+-        <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+-    </padding>
+-</GridPane>
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,10 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Ignored default folder with query files
+-/queries/
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+Index: .mvn/wrapper/maven-wrapper.properties
+===================================================================
+diff --git a/.mvn/wrapper/maven-wrapper.properties b/.mvn/wrapper/maven-wrapper.properties
+deleted file mode 100644
+--- a/.mvn/wrapper/maven-wrapper.properties	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ /dev/null	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
+@@ -1,2 +0,0 @@
+-distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.8.5/apache-maven-3.8.5-bin.zip
+-wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.3.2/maven-wrapper-3.3.2.jar
+\ No newline at end of file
+Index: .idea/TipCalculator.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/TipCalculator.iml b/.idea/TipCalculator.iml
+new file mode 100644
+--- /dev/null	(date 1773859139559)
++++ b/.idea/TipCalculator.iml	(date 1773859139559)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module version="4">
++  <component name="AdditionalModuleElements">
++    <content url="file://$MODULE_DIR$" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\r\n  <component name=\"MavenProjectsManager\">\r\n    <option name=\"originalFiles\">\r\n      <list>\r\n        <option value=\"$PROJECT_DIR$/pom.xml\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"25\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/out\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ b/.idea/misc.xml	(date 1773859139561)
+@@ -4,7 +4,7 @@
+   <component name="MavenProjectsManager">
+     <option name="originalFiles">
+       <list>
+-        <option value="$PROJECT_DIR$/pom.xml" />
++        <option value="$PROJECT_DIR$/TipCalculator/pom.xml" />
+       </list>
+     </option>
+   </component>
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+--- /dev/null	(date 1773859139561)
++++ b/.idea/modules.xml	(date 1773859139561)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/TipCalculator.iml" filepath="$PROJECT_DIR$/.idea/TipCalculator.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Encoding\">\r\n    <file url=\"file://$PROJECT_DIR$/src/main/java\" charset=\"UTF-8\" />\r\n    <file url=\"file://$PROJECT_DIR$/src/main/resources\" charset=\"UTF-8\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/encodings.xml b/.idea/encodings.xml
+--- a/.idea/encodings.xml	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ b/.idea/encodings.xml	(date 1773859139560)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="Encoding">
+-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
++    <file url="file://$PROJECT_DIR$/TipCalculator/src/main/java" charset="UTF-8" />
++    <file url="file://$PROJECT_DIR$/TipCalculator/src/main/resources" charset="UTF-8" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1773859139560)
++++ b/.idea/compiler.xml	(date 1773859139560)
+@@ -0,0 +1,13 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <annotationProcessing>
++      <profile name="Maven default annotation processors profile" enabled="true">
++        <sourceOutputDir name="target/generated-sources/annotations" />
++        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
++        <outputRelativeToContentRoot value="true" />
++        <module name="TipCalculator" />
++      </profile>
++    </annotationProcessing>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision d50c3814e2539bc42798af550a713499daf9a4d6)
++++ b/.idea/vcs.xml	(date 1773859139562)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jarRepositories.xml b/.idea/jarRepositories.xml
+new file mode 100644
+--- /dev/null	(date 1773859139561)
++++ b/.idea/jarRepositories.xml	(date 1773859139561)
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RemoteRepositoriesConfiguration">
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Central Repository" />
++      <option name="url" value="https://repo.maven.apache.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Maven Central repository" />
++      <option name="url" value="https://repo1.maven.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="jboss.community" />
++      <option name="name" value="JBoss Community repository" />
++      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
++    </remote-repository>
++  </component>
++</project>
+\ No newline at end of file
