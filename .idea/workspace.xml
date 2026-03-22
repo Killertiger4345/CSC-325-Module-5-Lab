@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d35e01f-b9e8-4ab6-b36a-2947919e4dff" name="Changes" comment="Merge remote-tracking branch 'origin/main'">
+    <list default="true" id="5d35e01f-b9e8-4ab6-b36a-2947919e4dff" name="Changes" comment="Calculates automatically, removed button">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TipCalculator/src/main/java/com/hershey/tipcalculator/TipCalculatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TipCalculator/src/main/java/com/hershey/tipcalculator/TipCalculatorController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TipCalculator/src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/TipCalculator/src/main/resources/com/hershey/tipcalculator/TipCalculator.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +35,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -45,22 +46,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.TipCalculator.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "extract.method.default.visibility": "private",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/harsh/Documents/School Stuff/CSC 325/Module 5 Lab/TipCalculator",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.TipCalculator.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;extract.method.default.visibility&quot;: &quot;private&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/harsh/Documents/School Stuff/CSC 325/Module 5 Lab/TipCalculator&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\harsh\Documents\School Stuff\CSC 325\Module 5 Lab\TipCalculator" />
@@ -102,7 +103,11 @@
       <option name="presentableId" value="Default" />
       <updated>1773859100430</updated>
       <workItem from="1773859101525" duration="433000" />
-      <workItem from="1773934915731" duration="6377000" />
+      <workItem from="1773934915731" duration="7435000" />
+      <workItem from="1774118326069" duration="1199000" />
+      <workItem from="1774140460946" duration="325000" />
+      <workItem from="1774140837752" duration="20000" />
+      <workItem from="1774142088961" duration="46000" />
     </task>
     <task id="LOCAL-00001" summary="Created tip calculator app">
       <option name="closed" value="true" />
@@ -120,14 +125,63 @@
       <option name="project" value="LOCAL" />
       <updated>1773935190561</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Removed calculate button, using listeners to calculate on amount of tip edit">
+      <option name="closed" value="true" />
+      <created>1773943854289</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1773943854289</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Calculates automatically, removed button">
+      <option name="closed" value="true" />
+      <created>1773943912633</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1773943912633</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Merge remote-tracking branch 'origin/main'">
+      <option name="closed" value="true" />
+      <created>1773943941494</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1773943941494</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created tip calculator app" />
+    <MESSAGE value="Removed calculate button, using listeners to calculate on amount of tip edit" />
+    <MESSAGE value="Calculates automatically, removed button" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
     <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/main'" />
   </component>
